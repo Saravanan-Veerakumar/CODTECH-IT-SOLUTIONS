@@ -48,7 +48,7 @@ def set_background(image_file):
     )
 
 # Read and encode the background image
-with open("24740.jpg", "rb") as bg_file:  # Replace with your image file
+with open("COVID-19_detection_from_X-ray_using_Computer_Vision/24740.jpg", "rb") as bg_file:  # Replace with your image file
     bg_image = bg_file.read()
     encoded_bg_image = base64.b64encode(bg_image).decode()
 

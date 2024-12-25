@@ -5,6 +5,7 @@ import numpy as np
 import requests
 import base64
 import os
+import tempfile
 
 # Function to cache the model file
 @st.cache_resource
@@ -78,8 +79,24 @@ st.markdown(
 )
 
 # File uploader
-st.markdown('<p>Upload an X-ray image:</p>', unsafe_allow_html=True)
-uploaded_file = st.file_uploader("", type=["jpg", "png", "jpeg"])
+st.markdown(
+    """
+    <style>
+    .file-uploader-label {
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown('<p class="file-uploader-label">Upload an X-ray image for prediction:</p>', unsafe_allow_html=True)
+
+uploaded_file = st.file_uploader("Choose an image file", type=["jpg", "png", "jpeg"], label_visibility="visible")
+
+if uploaded_file:
+    st.success("File uploaded successfully!")
 
 # Preprocess the image
 def preprocess_image(image):

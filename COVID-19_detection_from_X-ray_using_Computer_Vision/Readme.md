@@ -77,10 +77,19 @@ The app will open in your default web browser.
 - Easy-to-use web interface built using **Streamlit**.
 
 ---
+## Example output:
 
-### App Demo
+![image](https://github.com/user-attachments/assets/6f479793-dbe7-47a6-9384-b1e2c2ba6c01)
 
-Watch the demo of the app in action:
+![image](https://github.com/user-attachments/assets/d3825d29-9e98-429c-a0d1-d0626e04f64c)
+
+![image](https://github.com/user-attachments/assets/18fc7ec2-6a0a-4efa-bf8f-0d931d78d753)
+
+
+
+### 🎥 App Demo
+
+📹 Watch the demo of the app in action, Click the below thumbnail to see the live demo.
 
 [![Watch the demo](https://img.youtube.com/vi/woGspTurIEc/0.jpg)](https://youtu.be/woGspTurIEc)
 

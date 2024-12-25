@@ -8,35 +8,54 @@ import os
 import tempfile
 
 # Function to cache the model file
+def download_file_from_google_drive(file_id, destination):
+    URL = "https://drive.google.com/uc?export=download"
+    session = requests.Session()
+    
+    response = session.get(URL, params={"id": file_id}, stream=True)
+    token = get_confirm_token(response)
+    
+    if token:
+        params = {"id": file_id, "confirm": token}
+        response = session.get(URL, params=params, stream=True)
+    
+    save_response_content(response, destination)
+
+def get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith("download_warning"):
+            return value
+    return None
+
+def save_response_content(response, destination):
+    CHUNK_SIZE = 32768
+
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(CHUNK_SIZE):
+            if chunk:  # filter out keep-alive new chunks
+                f.write(chunk)
+
 @st.cache_resource
 def download_and_load_model():
-    model_url = "https://drive.google.com/uc?id=1VApI7olygDhgRMJzWgVRjH8BYMxMd9Lu"
+    model_id = "1VApI7olygDhgRMJzWgVRjH8BYMxMd9Lu"
     try:
-        # Download the model file to a temporary file
+        # Temporary file to store the model
         with tempfile.NamedTemporaryFile(delete=False, suffix=".h5") as tmp_file:
-            response = requests.get(model_url)
-            if response.status_code == 200:
-                tmp_file.write(response.content)
-                tmp_file_path = tmp_file.name
-                st.success("Model downloaded successfully.")
-            else:
-                st.error(f"Failed to download model. Status code: {response.status_code}")
-                return None
-        
-        # Ensure the file exists and is accessible
-        if os.path.exists(tmp_file_path):
-            # Load the model from the temporary file
+            tmp_file_path = tmp_file.name
+            
+            # Download the model
+            download_file_from_google_drive(model_id, tmp_file_path)
+            st.success("Model downloaded successfully.")
+            
+            # Load the model
             model = load_model(tmp_file_path)
             st.success("Model loaded successfully.")
             return model
-        else:
-            st.error("Temporary model file not found.")
-            return None
     except Exception as e:
         st.error(f"Error occurred during model download or loading: {e}")
         return None
 
-# Attempt to load the model
+# Load the model
 model = download_and_load_model()
 
 if model is None:

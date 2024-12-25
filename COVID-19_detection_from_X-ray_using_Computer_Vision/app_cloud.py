@@ -9,24 +9,39 @@ import os
 # Function to cache the model file
 @st.cache_resource
 def download_and_load_model():
-    """
-    Downloads the model file from a given URL, saves it locally, and loads it.
-    Returns the loaded model.
-    """
-    model_url = "https://drive.google.com/uc?export=download&id=1VApI7olygDhgRMJzWgVRjH8BYMxMd9Lu"  # Direct download link
-    model_path = "covid19_model.h5"
+    model_url = "https://drive.google.com/uc?id=1VApI7olygDhgRMJzWgVRjH8BYMxMd9Lu"
+    try:
+        # Download the model file to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".h5") as tmp_file:
+            response = requests.get(model_url)
+            if response.status_code == 200:
+                tmp_file.write(response.content)
+                tmp_file_path = tmp_file.name
+                st.success("Model downloaded successfully.")
+            else:
+                st.error(f"Failed to download model. Status code: {response.status_code}")
+                return None
+        
+        # Ensure the file exists and is accessible
+        if os.path.exists(tmp_file_path):
+            # Load the model from the temporary file
+            model = load_model(tmp_file_path)
+            st.success("Model loaded successfully.")
+            return model
+        else:
+            st.error("Temporary model file not found.")
+            return None
+    except Exception as e:
+        st.error(f"Error occurred during model download or loading: {e}")
+        return None
 
-    # Check if the model file already exists locally
-    if not os.path.exists(model_path):
-        with st.spinner("Downloading model..."):
-            response = requests.get(model_url, stream=True)
-            with open(model_path, "wb") as f:
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
+# Attempt to load the model
+model = download_and_load_model()
 
-    # Load and return the model
-    return load_model(model_path)
+if model is None:
+    st.error("Unable to load the model. Please check the logs and try again.")
+else:
+    st.success("Model is ready for predictions.")
 
 # Inject CSS to set a background image and effects
 def set_background(image_file):
